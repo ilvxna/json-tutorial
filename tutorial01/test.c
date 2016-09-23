@@ -77,6 +77,8 @@ static void test_parse() {
     test_parse_expect_value();
     test_parse_invalid_value();
     test_parse_root_not_singular();
+	test_parse_false();
+	test_parse_true();
 }
 
 int main() {
