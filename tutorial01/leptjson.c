@@ -1,9 +1,10 @@
 #include "leptjson.h"
 #include <assert.h>  /* assert() */
 #include <stdlib.h>  /* NULL */
-
+#include <math.h>
 #define EXPECT(c, ch)       do { assert(*c->json == (ch)); c->json++; } while(0)
-
+#define  ISDIGIT(ch) ((ch)>='0'&&(ch)<='9')
+#define ISDIGIT09(ch) ((ch)>='0'&&(ch)<='9')
 typedef struct {
     const char* json;
 }lept_context;
@@ -50,6 +51,29 @@ static int lept_parse_bumber(lept_context* c, lept_value* v)
 {
 	const char* p = c->json;
 	/*#### ¸ººÅ####*/
+	if (*p == "-")
+		p++;
+	if (*p == '0')
+		p++;
+	else
+	{
+		if (!ISDIGIT09(*p))
+		{
+			return LEPT_PARSE_INVALID_VALUE;
+			for (p++, ISDIGIT09(*p); p++);
+			{
+			}
+		}
+	}
+	if (*p=='.')
+	{
+		p++;
+		if (!ISDIGIT09(*p))
+			return LEPT_PARSE_INVALID_VALUE;
+		for (p++; ISDIGIT09(*p); p++);
+		
+	}
+
 
 
 }
