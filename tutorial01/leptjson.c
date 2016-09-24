@@ -2,6 +2,7 @@
 #include <assert.h>  /* assert() */
 #include <stdlib.h>  /* NULL */
 #include <math.h>
+
 #define EXPECT(c, ch)       do { assert(*c->json == (ch)); c->json++; } while(0)
 #define  ISDIGIT(ch) ((ch)>='0'&&(ch)<='9')
 #define ISDIGIT09(ch) ((ch)>='0'&&(ch)<='9')
@@ -47,7 +48,7 @@ static int lept_parse_literal(lept_context* c, lept_value* v, const char* litera
 	v->type = type;
 	return LEPT_PARSE_OK;
 }
-static int lept_parse_bumber(lept_context* c, lept_value* v)
+static int lept_parse_number(lept_context* c, lept_value* v)
 {
 	const char* p = c->json;
 	/*#### ¸ººÅ####*/
@@ -61,8 +62,7 @@ static int lept_parse_bumber(lept_context* c, lept_value* v)
 		{
 			return LEPT_PARSE_INVALID_VALUE;
 			for (p++, ISDIGIT09(*p); p++);
-			{
-			}
+			
 		}
 	}
 	if (*p=='.')
@@ -71,10 +71,20 @@ static int lept_parse_bumber(lept_context* c, lept_value* v)
 		if (!ISDIGIT09(*p))
 			return LEPT_PARSE_INVALID_VALUE;
 		for (p++; ISDIGIT09(*p); p++);
-		
 	}
-
-
+	if (*p=='e'||*p=='E')
+	{
+		p++;
+		if (*p == '+' || *p == '-')
+			p++;
+		if (!ISDIGIT(*p)) return LEPT_PARSE_INVALID_VALUE;
+		for (p++; ISDIGIT(*p); p++);
+	}
+	errno = 0;
+	v->n = strtod(c->json, NULL);
+		v->type = LEPT_NUMBER;
+		c->json = p;
+		return LEPT_PARSE_OK;
 
 }
 static int lept_parse_false(lept_context* c, lept_value* v)
@@ -118,4 +128,9 @@ int lept_parse(lept_value* v, const char* json) {
 lept_type lept_get_type(const lept_value* v) {
     assert(v != NULL);
     return v->type;
+}
+double lept_get_number(const lept_value* v)
+{
+	assert(v != NULL&&v->type == LEPT_NUMBER);
+	return v->n;
 }
